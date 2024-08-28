@@ -1,6 +1,3 @@
-# masterclass-24-09-ttmetad
-public tutorial of ttmetad
-
 ```mermaid
 flowchart LR
 A[TTMetaD Paper] ==> D[Instructions]

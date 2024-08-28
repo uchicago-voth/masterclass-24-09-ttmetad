@@ -1,0 +1,9 @@
+ref1: 
+  location: https://pubs.acs.org/doi/full/10.1021/ct500441q
+  type: external
+ref2:
+  location: https://www.pnas.org/doi/10.1073/pnas.2305899120
+  type: external
+ref3:
+  location: 21/004
+  type: internal
