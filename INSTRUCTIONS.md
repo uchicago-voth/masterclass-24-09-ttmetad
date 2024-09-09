@@ -88,5 +88,45 @@ In contrast, WTMetaD scales down the Gaussian hills as it revisits previously ex
 
 This example is primarily intended to illustrate the implementation of TTMetaD. A more practical application is covered in the second example.
 
-### Section 2: GTP hydrolysis
+### Section 2: GTP hydrolysis in microtubules using QM/MM TTMetaD simulations
 Microtubules (MTs) are large cytoskeletal polymers composed of αβ-tubulin heterodimers. These dynamic structures can stochastically switch between polymerizing and depolymerizing states. The depolymerization process is closely coupled with the hydrolysis of guanosine triphosphate (GTP) within the β-tubulin subunit, which is bound to the E-site (exchangeable site). In this example, we will set up QM/MM TTMetaD simulations to study the hydrolysis mechanism of GTP at the E-site.
+
+![Ball-and-stick structures of GTP and GDP.](./figs/gtp_gdp.jpg)
+
+
+
+GDP is the hydrolysis product of GTP. The primary structural differences between GTP and GDP involve the coordination configuration of P$_γ$ atom (named PG in the figure above). Before hydrolysis, P$_γ$ is bonded to three O$_γ$ atoms, one O$_β$ atom (named PB in the figure above), and partially connected to the solvent water oxytens (named OW). After hydrolysis, but before the release of Pi from the binding pocket, P$_γ$ is connected to three O$_γ$ atoms (O1G, O2G, and O3G in the figure above) and one water oxygen.
+
+We define two CVs to characterize GTP hydrolysis reaction:
+- Dissociation of phosphate: Captured by the coordination number between P$_γ$ and O$_β$. This CV varies from approximately 1 in the reactant state to 0 in the product state.
+- Association of water with P$_γ$: Captured by the coordination numbers of P$_γ$ with O$_\text{w}$ and P$_γ$ with O$_γ$. This CV varies from roughly 3 in the reactant state to over 4 in the product state.
+
+![Labeled atoms for reaction coordinate definitions](./figs/pocket.jpg)
+
+Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi.org/10.1021/acs.jctc.7b00077), we define the reactant basin at (1.0, 3.2) and the product basin at (0.1, 4.3). These basin centers help determine when a trajectory has crossed into the reactant or product well and are the endpoints for the path connecting the two wells. The only input into tempering in TTMetaD is the minimum bias on the maximally biased path between the two wells.
+
+#### Step 1: Define the two CVs
+Start by defining the two coordination numbers of the Pγ atom.
+  
+```plumed
+```
+
+
+#### Step 2: Add MetaD bias with delayed tempering
+Apply a metadynamics bias to the two CVs using TTMetaD, with a delayed tempering condition of V* > 1 kcal/mol.
+
+```plumed
+```
+
+### Step 3: Perform TTMetaD QM/MM simulations
+Perform the TTMetaD simulation using CP2K software interfaced with PLUMED library and obtain the data files. Since running QM/MM simulations is computationally expensive, we have provided a copy of pre-generated HILLS data on the [GitHub](https://github.com/uchicago-voth/masterclass-24-09-ttmetad/tree/main/mt_gtp) page for analysis.
+
+### Step 4: Plot the 2D PMF
+You can extract the Gaussian hills from the HILLS file for TTMetaD and visualize the final 2D PMF. The results should look like below:
+
+![2D PMF at 50 ns.](./mt_gtp/fes_50ns.png)
+
+We have provided the data and Python scripts in the Jupyter notebook for visualization on the accompanying [GitHub](https://github.com/uchicago-voth/masterclass-24-09-ttmetad/tree/main/mt_gtp) page, but you are encouraged to try this yourself first.
+
+## Question
+Numerous biomolecular hydrolysis reactions and enzymatic reactions can be studied using TTMetaD with QM/MM simulations. Can you write a PLUMED input script to bias a similar ATP hydrolysis reaction in one subunit of the actin filament?
