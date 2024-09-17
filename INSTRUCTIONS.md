@@ -103,12 +103,23 @@ We define two CVs to characterize GTP hydrolysis reaction:
 
 ![Labeled atoms for reaction coordinate definitions](./figs/pocket.jpg)
 
-Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi.org/10.1021/acs.jctc.7b00077), we define the reactant basin at (1.0, 3.2) and the product basin at (0.1, 4.3). These basin centers help determine when a trajectory has crossed into the reactant or product well and are the endpoints for the path connecting the two wells. The only input into tempering in TTMetaD is the minimum bias on the maximally biased path between the two wells.
+Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi.org/10.1021/acs.jctc.7b00077), we define the reactant basin at (1.0, 3.2) and the product basin at (0.1, 4.3). These basin centers help determine when a trajectory has crossed into the reactant or product well and are the endpoints for the path connecting the two wells. The only input of TTMetaD is the minimum bias on the maximally biased path between the two wells.
 
 #### Step 1: Define the two CVs
 Start by defining the two coordination numbers of the Pγ atom.
   
 ```plumed
+#SOLUTIONFILE="./mt_gtp/plumed.dat"
+# colvar definitions for TTMetaD
+P: GROUP ATOMS=__FILL__ # Gamma Phosphorus
+Ow: GROUP ATOMS=__FILL__ # QM Water Oxygens AND Gamma Oxygens
+Ob: GROUP ATOMS=__FILL__ # Beta Oxygens
+
+# NN = 6, ND = 12 
+cb: COORDINATION GROUPA=__FILL__ GROUPB=__FILL__ R_0=2.38
+cw: COORDINATION GROUPA=__FILL__ GROUPB=__FILL__ R_0=2.38
+
+ex: EXTENDED_LAGRANGIAN ARG=cb,cw KAPPA=1300,1300 TAU=31.4,31.4
 ```
 
 
@@ -116,6 +127,22 @@ Start by defining the two coordination numbers of the Pγ atom.
 Apply a metadynamics bias to the two CVs using TTMetaD, with a delayed tempering condition of V* > 1 kcal/mol.
 
 ```plumed
+#SOLUTIONFILE="./mt_gtp/plumed.dat"
+m: METAD ...
+   ARG=__FILL__
+# 1 kcal/mol height   
+   HEIGHT=__FILL__
+# SIGMA is in CV space   
+   SIGMA=0.020,0.020
+# hill addition frequency
+   PACE=40
+   TEMP=310
+   TTBIASFACTOR=5
+   TTBIASTHRESHOLD=__FILL__
+# define two transition wells
+   TRANSITIONWELL0=__FILL__
+   TRANSITIONWELL1=__FILL__
+... m:
 ```
 
 ### Step 3: Perform TTMetaD QM/MM simulations
@@ -124,9 +151,11 @@ Perform the TTMetaD simulation using CP2K software interfaced with PLUMED librar
 ### Step 4: Plot the 2D PMF
 You can extract the Gaussian hills from the HILLS file for TTMetaD and visualize the final 2D PMF. The results should look like below:
 
-![2D PMF at 50 ns.](./mt_gtp/fes_50ns.png)
+![2D PMF at 50 ns.](./mt_gtp/fes.png)
 
 We have provided the data and Python scripts in the Jupyter notebook for visualization on the accompanying [GitHub](https://github.com/uchicago-voth/masterclass-24-09-ttmetad/tree/main/mt_gtp) page, but you are encouraged to try this yourself first.
 
 ## Question
+How do you interpret the 2D PMF of GTP hydrolysis in microtubules? What are the key features of the PMF that reveal the hydrolysis mechanism? You may refer to the Results and Discussion part in [Beckett and Voth](https://doi.org/10.1073/pnas.2305899120)!
+
 Numerous biomolecular hydrolysis reactions and enzymatic reactions can be studied using TTMetaD with QM/MM simulations. Can you write a PLUMED input script to bias a similar ATP hydrolysis reaction in one subunit of the actin filament?

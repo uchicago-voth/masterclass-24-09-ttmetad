@@ -1,0 +1,64 @@
+RESTART
+UNITS LENGTH=A TIME=fs ENERGY=kcal/mol
+INCLUDE FILE=new-ab.txt
+
+#######These are the definitions for the constraints
+b1: COM ATOMS=CA1 
+b2: COM ATOMS=CA2 
+
+#AB COM_dist
+abdist: DISTANCE ATOMS=b1,b2 
+
+restraint: RESTRAINT ARG=abdist AT=40.507 KAPPA=59.75
+
+
+#######Colvar definitions for MetaD
+P: GROUP ATOMS=13513 # Gamma Phosphorus
+Ow: GROUP ATOMS=21459,56067,76824,83058,91299,99828,102303,102732,102738,108342,129147,130071,159021,165957,13514,13515,13516 # QM Water Oxygens AND Gamma Oxygens - last three numbers
+
+Ob: GROUP ATOMS=13510,13511,13512 # Beta Oxygens
+
+# using Martin's parameters here, sigma=4.5 bohr
+# NN = 6, ND = 12 
+cb: COORDINATION GROUPA=P GROUPB=Ob R_0=2.38
+cw: COORDINATION GROUPA=P GROUPB=Ow R_0=2.38
+
+# using Rui's parameters here
+ex: EXTENDED_LAGRANGIAN ARG=cb,cw KAPPA=1300,1300 TAU=31.4,31.4
+
+######Limits on the CNs 
+LOWER_WALLS ARG=ex.cw_fict AT=2.5 KAPPA=5.0
+UPPER_WALLS ARG=ex.cw_fict AT=5.0 KAPPA=5.0
+##########
+
+m: METAD ...
+   ARG=ex.cb_fict,ex.cw_fict
+# 1 kcal/mol height   
+   HEIGHT=1 
+# SIGMA is in CV space   
+   SIGMA=0.020,0.020
+# hill addition frequency
+   PACE=40
+# max and min values for grid   
+#   GRID_MIN=-1,1
+#   GRID_MAX=2,6
+# number of bins (100 per CN in range)
+#   GRID_BIN=300,500
+#   GRID_WSTRIDE=2
+#   GRID_RFILE=grid-restart.dat
+#   GRID_WFILE=grid-out.dat
+   TEMP=310
+   TTBIASFACTOR=5
+   TTBIASTHRESHOLD=1
+# Rui's numbers were 1.0 and 0.1 for cb and 
+# 3.2 and 4.3 for cw, taken from Martin's paper
+   TRANSITIONWELL0=1.0,3.2
+   TRANSITIONWELL1=0.1,4.3
+#   GRID_NOSPLINE
+... m:
+
+# flush the stream every 25 fs
+FLUSH STRIDE=50
+
+#write every 25 fs
+PRINT ARG=abdist,ex.cb_fict,ex.cw_fict,restraint.bias,m.bias FILE=colvars.dat STRIDE=50 FMT=%8.4f
