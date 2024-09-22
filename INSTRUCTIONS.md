@@ -101,7 +101,7 @@ We define two CVs to characterize GTP hydrolysis reaction:
 - Dissociation of phosphate: Captured by the coordination number between P$_γ$ and O$_β$. This CV varies from approximately 1 in the reactant state to 0 in the product state.
 - Association of water with P$_γ$: Captured by the coordination numbers of P$_γ$ with O$_\text{w}$ and P$_γ$ with O$_γ$. This CV varies from roughly 3 in the reactant state to over 4 in the product state.
 
-![Labeled atoms for reaction coordinate definitions](./figs/pocket.jpg)
+![Labeled atoms for reaction coordinate definitions.](./figs/pocket.jpg)
 
 Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi.org/10.1021/acs.jctc.7b00077), we define the reactant basin at (1.0, 3.2) and the product basin at (0.1, 4.3). These basin centers help determine when a trajectory has crossed into the reactant or product well and are the endpoints for the path connecting the two wells. The only input of TTMetaD is the minimum bias on the maximally biased path between the two wells.
 
@@ -151,11 +151,11 @@ Perform the TTMetaD simulation using CP2K software interfaced with PLUMED librar
 ### Step 4: Plot the 2D PMF
 You can extract the Gaussian hills from the HILLS file for TTMetaD and visualize the final 2D PMF. The results should look like below:
 
-![2D PMF at 50 ns.](./mt_gtp/fes.png)
+![2D PMF for GTP hydrylysis in the tubulin interdimer complex.](./mt_gtp/fes.png)
 
 We have provided the data and Python scripts in the Jupyter notebook for visualization on the accompanying [GitHub](https://github.com/uchicago-voth/masterclass-24-09-ttmetad/tree/main/mt_gtp) page, but you are encouraged to try this yourself first.
 
-## Question
+## Questions
 How do you interpret the 2D PMF of GTP hydrolysis in microtubules? What are the key features of the PMF that reveal the hydrolysis mechanism? You may refer to the Results and Discussion part in [Beckett and Voth](https://doi.org/10.1073/pnas.2305899120)!
 
 Numerous biomolecular hydrolysis reactions and enzymatic reactions can be studied using TTMetaD with QM/MM simulations. Can you write a PLUMED input script to bias a similar ATP hydrolysis reaction in one subunit of the actin filament?
