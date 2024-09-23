@@ -109,7 +109,7 @@ Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi
 Start by defining the two coordination numbers of the Pγ atom.
   
 ```plumed
-#SOLUTIONFILE="mt_gtp/plumed.dat"
+#SOLUTIONFILE=mt_gtp/plumed.dat
 # colvar definitions for TTMetaD
 P: GROUP ATOMS=__FILL__ # Gamma Phosphorus
 Ow: GROUP ATOMS=__FILL__ # QM Water Oxygens AND Gamma Oxygens
@@ -127,7 +127,7 @@ ex: EXTENDED_LAGRANGIAN ARG=cb,cw KAPPA=1300,1300 TAU=31.4,31.4
 Apply a metadynamics bias to the two CVs using TTMetaD, with a delayed tempering condition of V* > 1 kcal/mol.
 
 ```plumed
-#SOLUTIONFILE="mt_gtp/plumed.dat"
+#SOLUTIONFILE=mt_gtp/plumed.dat
 m: METAD ...
    ARG=__FILL__
 # 1 kcal/mol height   
