@@ -1,4 +1,4 @@
-# PLUMED Masterclass XX.X: Transition-Tempered Metadynamics
+# PLUMED Masterclass: Transition-Tempered Metadynamics
 
 ## Origin 
 
@@ -45,6 +45,9 @@ Click on the labels of the actions for more information on what each action comp
 #### Step 1: Define the two CVs
 First, define the two CVs, the phi and psi angles of alanine dipeptide. 
 
+#### Step 2: Add MetaD bias to the two CVs
+Next, add a metadynamics bias to the two CVs by invoking the TTMetaD command. According to the 2D PMF from [Chen et al.](https://doi.org/10.1063/1.4733389), we define two metabasins for the phi and psi angles of alanine dipeptide as (-1.49,-1.20) and (1.05,-2.04), respectively.
+
 ```plumed
 #SOLUTIONFILE=alad/plumed.dat
 MOLINFO STRUCTURE=step3_input.pdb
@@ -53,13 +56,7 @@ WHOLEMOLECULES ENTITY0=__FILL__
 
 phi: TORSION ATOMS=__FILL__
 psi: TORSION ATOMS=__FILL__
-```
 
-#### Step 2: Add MetaD bias to the two CVs
-Next, add a metadynamics bias to the two CVs by invoking the TTMetaD command. According to the 2D PMF from [Chen et al.](https://doi.org/10.1063/1.4733389), we define two metabasins for the phi and psi angles of alanine dipeptide as (-1.49,-1.20) and (1.05,-2.04), respectively.
-
-```plumed
-#SOLUTIONFILE=alad/plumed.dat
 metad: METAD ...
   ARG=__FILL__ PACE=500 HEIGHT=1.0 SIGMA=0.2,0.2 FILE=HILLS
   TTBIASFACTOR=10 TTBIASTHRESHOLD=1
@@ -109,39 +106,36 @@ Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi
 Start by defining the two coordination numbers of the Pγ atom.
   
 ```plumed
-#SOLUTIONFILE=mt_gtp/plumed.dat
 # colvar definitions for TTMetaD
-P: GROUP ATOMS=__FILL__ # Gamma Phosphorus
-Ow: GROUP ATOMS=__FILL__ # QM Water Oxygens AND Gamma Oxygens
-Ob: GROUP ATOMS=__FILL__ # Beta Oxygens
+P: GROUP ATOMS=13513 # Gamma Phosphorus
+Ow: GROUP ATOMS=21459,56067,76824,83058,91299,99828,102303,102732,102738,108342,129147,130071,159021,165957,13514,13515,13516 # QM Water Oxygens AND Gamma Oxygens
+Ob: GROUP ATOMS=13510,13511,13512 # Beta Oxygens
 
 # NN = 6, ND = 12 
-cb: COORDINATION GROUPA=__FILL__ GROUPB=__FILL__ R_0=2.38
-cw: COORDINATION GROUPA=__FILL__ GROUPB=__FILL__ R_0=2.38
+cb: COORDINATION GROUPA=P GROUPB=Ob R_0=2.38
+cw: COORDINATION GROUPA=P GROUPB=Ow R_0=2.38
 
 ex: EXTENDED_LAGRANGIAN ARG=cb,cw KAPPA=1300,1300 TAU=31.4,31.4
 ```
-
 
 #### Step 2: Add MetaD bias with delayed tempering
 Apply a metadynamics bias to the two CVs using TTMetaD, with a delayed tempering condition of V* > 1 kcal/mol.
 
 ```plumed
-#SOLUTIONFILE=mt_gtp/plumed.dat
 m: METAD ...
-   ARG=__FILL__
+   ARG=ex.cb_fict,ex.cw_fict
 # 1 kcal/mol height   
-   HEIGHT=__FILL__
+   HEIGHT=1 
 # SIGMA is in CV space   
    SIGMA=0.020,0.020
 # hill addition frequency
    PACE=40
    TEMP=310
    TTBIASFACTOR=5
-   TTBIASTHRESHOLD=__FILL__
+   TTBIASTHRESHOLD=1
 # define two transition wells
-   TRANSITIONWELL0=__FILL__
-   TRANSITIONWELL1=__FILL__
+   TRANSITIONWELL0=1.0,3.2
+   TRANSITIONWELL1=0.1,4.3
 ... m:
 ```
 
