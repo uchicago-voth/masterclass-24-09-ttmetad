@@ -50,7 +50,6 @@ Next, add a metadynamics bias to the two CVs by invoking the TTMetaD command. Ac
 
 ```plumed
 #SOLUTIONFILE=alad/plumed.dat
-#SETTINGS NATOMS=2278
 MOLINFO STRUCTURE=step3_input.pdb
 
 WHOLEMOLECULES ENTITY0=__FILL__
@@ -107,6 +106,7 @@ Based on previous studies of ATP hydrolysis in actin by [Sun et al.](https://doi
 Start by defining the two coordination numbers of the Pγ atom.
   
 ```plumed
+#SETTINGS NATOMS=182696
 #HIDDEN
 RESTART
 UNITS LENGTH=A TIME=fs ENERGY=kcal/mol
@@ -177,6 +177,7 @@ PRINT ARG=abdist,ex.cb_fict,ex.cw_fict,restraint.bias,m.bias FILE=colvars.dat ST
 Apply a metadynamics bias to the two CVs using TTMetaD, with a delayed tempering condition of V* > 1 kcal/mol.
 
 ```plumed
+#SETTINGS NATOMS=182696
 #HIDDEN
 RESTART
 UNITS LENGTH=A TIME=fs ENERGY=kcal/mol
